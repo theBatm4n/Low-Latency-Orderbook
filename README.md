@@ -54,11 +54,12 @@ Cache-local memory layout
 Predictable performance
 
 3. Custom Memory Pool
-cpp
+```cpp
 struct Block {
     LockFreeOrder orders[1024];  // Pre-allocated
     Block* next;
 };
+```
 Zero allocations during trading
 
 Contiguous memory layout
@@ -66,8 +67,7 @@ Contiguous memory layout
 20x faster order creation
 
 4. Lock-Free Order Class
-cpp
-```
+```cpp
 class alignas(64) LockFreeOrder {
     const OrderId orderId_;             
     std::atomic<Quantity> remaining_;    
@@ -75,8 +75,7 @@ class alignas(64) LockFreeOrder {
 };
 ```
 4. Ring Buffer for Order Submission
-cpp
-```
+```cpp
 template<typename T, size_t Capacity>
 class LockFreeRingBuffer {
     std::array<T, Capacity> buffer_;
