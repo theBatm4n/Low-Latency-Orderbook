@@ -1,6 +1,6 @@
 # High-Performance Lock-Free Orderbook
 
-A low-latency C++ orderbook implementation achieving <50μs per trade latency through lock-free data structures and custom memory management.
+A low-latency C++ orderbook implementation achieving per trade latency through lock-free data structures and custom memory management.
 
 ## Overview
 
