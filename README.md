@@ -46,3 +46,43 @@ static constexpr Price MIN_PRICE = 0.0;
 static constexpr Price MAX_PRICE = 500.0;
 static constexpr Price TICK_SIZE = 0.01;
 static constexpr size_t NUM_LEVELS = 50000;
+
+O(1) direct access vs O(log n) tree traversal
+
+Cache-local memory layout
+
+Predictable performance
+
+3. Custom Memory Pool
+cpp
+struct Block {
+    LockFreeOrder orders[1024];  // Pre-allocated
+    Block* next;
+};
+Zero allocations during trading
+
+Contiguous memory layout
+
+20x faster order creation
+
+4. Lock-Free Order Class
+cpp
+class alignas(64) LockFreeOrder {
+    const OrderId orderId_;              // Immutable - no sync needed
+    std::atomic<Quantity> remaining_;    // Thread-safe without locks
+    std::atomic<LockFreeOrder*> next_;   // For lock-free lists
+};
+5. Ring Buffer for Order Submission
+cpp
+template<typename T, size_t Capacity>
+class LockFreeRingBuffer {
+    std::array<T, Capacity> buffer_;
+    std::atomic<size_t> head_;
+    std::atomic<size_t> tail_;
+    // Lock-free producer/consumer
+};
+Decouples order submission from processing
+
+No blocking between threads
+
+Batch processing capability
