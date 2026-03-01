@@ -42,7 +42,7 @@ LockFreeOrder* LockFreeOrderbook::allocateOrder(OrderType type, OrderId id, Side
 }    
 
 LockFreeOrderbook::OrderSlot& LockFreeOrderbook::getOrderSlot(OrderId id){
-    size_t index = id & (ORDER_TABLE_SIZE -1); // fast modulo 
+    size_t index = id & (ORDER_TABLE_SIZE -1); 
     return orderTable_[index];
 }
 
@@ -188,4 +188,26 @@ Quantity LockFreeOrderbook::getBestAskQuantity() const {
         if (qty > 0) return qty;
     }
     return 0;
+}
+
+Price LockFreeOrderbook::getBestBidPrice() const {
+    for (size_t i = bids_.size() -1 ; i > 0; --i){
+        Quantity qty = bids_[i].totalQuantity.load(std::memory_order_acquire);
+        if (qty > 0){
+            return MIN_PRICE + (i * TICK_SIZE);
+        }
+    }
+    Quantity qty = bids_[0].totalQuantity.load(std::memory_order_acquire);
+    if (qty > 0) return MIN_PRICE;
+    return -1;  
+}
+
+Price LockFreeOrderbook::getBestAskPrice() const {
+    for (size_t i = 0; i < asks_.size(); ++i) {
+        Quantity qty = asks_[i].totalQuantity.load(std::memory_order_acquire);
+        if (qty > 0) {
+            return MIN_PRICE + (i * TICK_SIZE);
+        }
+    }
+    return -1;  
 }

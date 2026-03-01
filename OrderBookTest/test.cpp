@@ -1,6 +1,7 @@
 #include "pch.h"
 
 #include "../orderbook.cpp"
+#include "../OrderbookLockFree.h"
 
 namespace googletest = ::testing;
 
@@ -246,5 +247,20 @@ INSTANTIATE_TEST_CASE_P(Tests, OrderbookTestsFixture, googletest::ValuesIn({
     "Cancel_Success.txt",
     "Modify_Side.txt",
     "Match_Market.txt"
-    }));
+}));
 
+class LockFreeOrderbookTestsFixture : public googletest::TestWithParam<const char*> {
+private:
+    const static inline std::filesystem::path Root { std::filesystem::current_path() };
+    const static inline std::filesystem::path TestFolder{ "TestFolder" };
+public:
+    const static inline std::filesystem::path TestFolderPath{ Root / TestFolder };
+};
+
+
+TEST_P(LockFreeOrderbookTestsFixture, LockFreeOrderbookTestSuite){
+    const auto file = LockFreeOrderbookTestsFixture::TestFolderPath / GetParam();
+
+    InputHandler handler;
+    const auto [update, result] = handler.GetInformations(file);
+}
